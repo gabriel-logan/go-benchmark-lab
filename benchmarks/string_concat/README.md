@@ -34,6 +34,11 @@ go test -bench=. -benchmem
 
 ---
 
+- Iterations: Number of times the benchmark loop was executed
+- ns/op: Average time per operation in nanoseconds
+- B/op: Average bytes allocated per operation
+- allocs/op: Average number of allocations per operation
+
 ## 📊 Results
 
 | Benchmark                      | iterations | ns/op | B/op | allocs/op |
