@@ -34,17 +34,50 @@ go test -bench=. -benchmem
 
 ---
 
-- Iterations: Number of times the benchmark loop was executed
-- ns/op: Average time per operation in nanoseconds
-- B/op: Average bytes allocated per operation
-- allocs/op: Average number of allocations per operation
+### Metrics
+
+* **iterations**: number of benchmark iterations
+* **ns/op**: average time per operation (nanoseconds)
+* **B/op**: bytes allocated per operation
+* **allocs/op**: allocations per operation
+
+---
 
 ## 📊 Results
 
+### Run 1
+
 | Benchmark                      | iterations | ns/op | B/op | allocs/op |
 | ------------------------------ | ---------: | ----: | ---: | --------: |
-| BenchmarkConcatPlus            |     228008 |  4897 | 5664 |        99 |
-| BenchmarkConcatBuilderPrealloc |    5483650 |   208 |  112 |         1 |
+| BenchmarkConcatPlus            |     218046 |  4843 | 5664 |        99 |
+| BenchmarkConcatBuilderPrealloc |    5417446 | 195.1 |  112 |         1 |
+
+---
+
+### Run 2
+
+| Benchmark                      | iterations | ns/op | B/op | allocs/op |
+| ------------------------------ | ---------: | ----: | ---: | --------: |
+| BenchmarkConcatPlus            |     258368 |  4408 | 5664 |        99 |
+| BenchmarkConcatBuilderPrealloc |    6048504 | 200.9 |  112 |         1 |
+
+---
+
+### Run 3
+
+| Benchmark                      | iterations | ns/op | B/op | allocs/op |
+| ------------------------------ | ---------: | ----: | ---: | --------: |
+| BenchmarkConcatPlus            |     232026 |  4929 | 5664 |        99 |
+| BenchmarkConcatBuilderPrealloc |    5623080 | 210.2 |  112 |         1 |
+
+---
+
+## 📊 Average Results (3 runs)
+
+| Benchmark                      | avg iterations | avg ns/op | avg B/op | avg allocs/op |
+| ------------------------------ | -------------: | --------: | -------: | ------------: |
+| BenchmarkConcatPlus            |         236813 |    4726.7 |     5664 |            99 |
+| BenchmarkConcatBuilderPrealloc |        5696343 |     202.1 |      112 |             1 |
 
 ---
 
@@ -56,7 +89,6 @@ Benchmarks were executed on:
 * Architecture: amd64
 * CPU: Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz
 * 12 GB RAM DDR4 1400 MHz
-* Go version: (fill with `go version`)
 
 ---
 
@@ -64,35 +96,39 @@ Benchmarks were executed on:
 
 ### Performance
 
-`strings.Builder` with preallocation is significantly faster (~20x improvement in this run).
+`strings.Builder` with preallocation is ~23x faster on average in this benchmark.
 
 ### Memory usage
 
-* `+` operator: high memory usage due to repeated allocations
+* `+` operator: high memory usage due to repeated allocations and copies
 * `Builder`: minimal memory usage due to buffer reuse
 
 ### Allocations
 
-* Naive approach: ~1 allocation per iteration
-* Builder (preallocated): ~1 allocation total
+* Naive approach: **~99 allocations per operation** (not 1 per iteration)
+* Builder (preallocated): **1 allocation total**
 
 ---
 
 ## 🧠 Explanation
 
-Strings in Go are immutable. Each concatenation using `+` creates a new string and copies previous data, leading to:
+Strings in Go are immutable. Each concatenation using `+`:
 
-* repeated allocations
-* increasing copy cost
-* quadratic time complexity (O(n²))
+* allocates a new string
+* copies previous content
+* increases total cost progressively
+
+This leads to:
+
+* multiple allocations (~N)
+* growing copy cost
+* overall **O(n²)** behavior in loops
 
 `strings.Builder` avoids this by:
 
 * using a mutable internal buffer
-* minimizing copying
-* reducing allocations
-
-Calling `Grow()` ensures the buffer is allocated once, avoiding resizing during writes.
+* reducing copies
+* performing a single allocation when `Grow()` is used
 
 ---
 
@@ -113,5 +149,5 @@ b.Grow(n)
 
 * Results are machine-dependent
 * Focus on relative differences, not absolute values
-* Preallocation has a significant impact on performance
+* Preallocation has a major impact
 * This is a microbenchmark, not a real-world workload
