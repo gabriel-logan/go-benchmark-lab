@@ -36,10 +36,10 @@ go test -bench=. -benchmem
 
 ## 📊 Results
 
-| Benchmark                      | ns/op | B/op | allocs/op |
-| ------------------------------ | ----: | ---: | --------: |
-| BenchmarkConcatPlus            |  4897 | 5664 |        99 |
-| BenchmarkConcatBuilderPrealloc |   208 |  112 |         1 |
+| Benchmark                      | iterations | ns/op | B/op | allocs/op |
+| ------------------------------ | ---------: | ----: | ---: | --------: |
+| BenchmarkConcatPlus            |     228008 |  4897 | 5664 |        99 |
+| BenchmarkConcatBuilderPrealloc |    5483650 |   208 |  112 |         1 |
 
 ---
 

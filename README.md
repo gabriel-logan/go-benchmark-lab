@@ -28,6 +28,8 @@ Examples of topics:
 * sync vs channels
 * allocation patterns
 * string operations
+* pointer vs value semantics
+* etc.
 
 ## 🚀 Running benchmarks
 
